@@ -1,0 +1,66 @@
+import Customer from "../models/Customer";
+
+const customers = [
+  { id: 1, name: "Dev Samurai", site: "http://devsamurai.com.br" },
+  { id: 2, name: "Google", site: "http://google.com" },
+  { id: 3, name: "UOL", site: "http://uol.com.br" },
+];
+
+class CustomersController {
+
+  async index(req, res) {
+    const data = await Customer.findAll({
+      limit: 1000,
+    })
+    return res.json(data);
+  }
+
+  show(req, res) {
+    // eslint-disable-next-line radix
+    const id = parseInt(req.params.id);
+    const customer = customers.find(item => item.id === id);
+    const status = customer ? 200 : 400;
+
+    // console.debug("GET :: /customers/:id ",customers)
+
+    return res.status(status).json(customer);
+  }
+
+  create(req, res) {
+    const { name, site } = req.body;
+    const id = customers[this.customers.length - 1].id + 1;
+
+    const newCustomer = { id, name, site };
+    customers.push(newCustomer);
+
+    return res.status(201).json(newCustomer);
+  }
+
+  update(req, res) {
+    const id = parseInt(req.params.id);
+    const { name, site } = req.body;
+
+    const index = customers.findIndex(item => item.id === id);
+    const status = index ? 200 : 404;
+
+    if (index >= 0) {
+      customers[index] = { id: parseInt(id), name, site };
+    }
+
+    return res.status(status).json(this.customers[index]);
+  }
+
+  destroy(req, res) {
+    const id = parseInt(req.params.id);
+    const index = customers.findIndex(item => item.id === id);
+    const status = index ? 200 : 404;
+
+    if (index >= 0) {
+      customers.splice(index, 1);
+    }
+
+    return res.status(status).json();
+  }
+}
+
+export default new CustomersController();
